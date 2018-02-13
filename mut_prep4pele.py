@@ -73,7 +73,18 @@ def main(input_pdb, pdb_resolution, output_pdb="", no_gaps_ter=False, charge_ter
             PDBwriter(output_pdb[0], WritingAtomNames(structure2use), make_unique, residues2remove,
                       no_gaps_ter, not_proteic_ligand, gaps, not_gaps)
 
-        return residues_without_template, gaps, metals2coordinate
+        coordinated_atoms_ids = {}
+        for metal, atoms_list in metals2coordinate.iteritems():
+            metal_id = "{} {} {}".format(WritingAtomNames(metal).getNames()[0].replace(' ','_'),
+                                         metal.getChid(),
+                                         metal.getResnum())
+            atoms_ids = [["{} {} {} {}".format(at.getResname(),
+                                               at.getResnum(), at.getChid(),
+                                               WritingAtomNames(at).getNames()[0].replace(' ', '_'),),
+                          calcDistance(metal, at)[0]] for at in atoms_list]
+            if len(atoms_list) in [x[1] for x in coordination_geometries.itervalues()]:
+                coordinated_atoms_ids[metal_id] = atoms_ids
+        return residues_without_template, gaps, coordinated_atoms_ids
     else:
         clashes = []
         mutated_structure = None
@@ -86,7 +97,6 @@ def main(input_pdb, pdb_resolution, output_pdb="", no_gaps_ter=False, charge_ter
                                "The checked structure will be written to {}".format(output_file)
                 PDBwriter(output_file, WritingAtomNames(structure2use), make_unique, gaps, no_gaps_ter, not_gaps)
                 continue
-            else:
                 print "Output_file name: {0}".format(output_file)
                 mutated_structure, zmatrix = Mutate(structure2use, mutation)
                 if not mutant_multiple:
@@ -122,7 +132,7 @@ if __name__ == '__main__':
     if arguments is None:
         sys.exit()
     else:
-        main(arguments.input_pdb, arguments.pdb_resolution, output_pdb=arguments.output_pdb,
-             no_gaps_ter=arguments.no_gaps_ter, charge_terminals=arguments.charge_terminals,
-             make_unique=arguments.make_unique, remove_terminal_missing=arguments.remove_terminal_missing,
-             mutant_multiple=arguments.mutant_multiple, mutation=arguments.mutation)
+        main(arguments.input_pdb, output_pdb=arguments.output_pdb, no_gaps_ter=arguments.no_gaps_ter,
+             charge_terminals=arguments.charge_terminals, make_unique=arguments.make_unique,
+             remove_terminal_missing=arguments.remove_terminal_missing, mutant_multiple=arguments.mutant_multiple,
+             mutation=arguments.mutation)
