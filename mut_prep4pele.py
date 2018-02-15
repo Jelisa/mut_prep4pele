@@ -133,7 +133,7 @@ if __name__ == '__main__':
     if arguments is None:
         sys.exit()
     else:
-        main(arguments.input_pdb, output_pdb=arguments.output_pdb, no_gaps_ter=arguments.no_gaps_ter,
-             charge_terminals=arguments.charge_terminals, make_unique=arguments.make_unique,
-             remove_terminal_missing=arguments.remove_terminal_missing, mutant_multiple=arguments.mutant_multiple,
-             mutation=arguments.mutation)
+        main(arguments.input_pdb, arguments.pdb_resolution, output_pdb=arguments.output_pdb,
+             no_gaps_ter=arguments.no_gaps_ter, charge_terminals=arguments.charge_terminals,
+             make_unique=arguments.make_unique, remove_terminal_missing=arguments.remove_terminal_missing,
+             mutant_multiple=arguments.mutant_multiple, mutation=arguments.mutation)
